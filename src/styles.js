@@ -26,6 +26,7 @@ const styles = StyleSheet.create({
     margin: 8,
   },
   elementText: {
+    width: "100%",
     fontSize: 21,
     marginLeft: 10,
   },
