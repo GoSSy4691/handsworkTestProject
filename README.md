@@ -28,3 +28,5 @@ git clone https://github.com/GoSSy4691/handsworkTestProject.git
 npm install
 npx react-native run-android
 ```
+## Пример:
+![test](https://user-images.githubusercontent.com/75677866/177000672-6601eae7-e3eb-4835-b8d1-f6b769e83ad8.gif)
