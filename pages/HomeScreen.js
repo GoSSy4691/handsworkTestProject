@@ -1,5 +1,5 @@
 import { ActivityIndicator, FlatList, Text, View } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { connect, useDispatch } from "react-redux";
 
 import styles from "../src/styles";
@@ -10,47 +10,57 @@ const HomeScreen = (props) => {
 
   const getData = async () => {
     try {
+      setLoading(true);
       const response = await fetch("https://api.github.com/events");
       const json = await response.json();
       const getOnly = 20;
       const cutList = json.slice(0, getOnly);
-      dispatch({ type: "LOAD_DATA", payload: cutList });
+      dispatch({ type: "LOAD_LIST", payload: cutList });
+      setLoading(false);
     } catch (error) {
       console.error(error);
-    } finally {
-      setLoading(false);
     }
   };
 
-  useEffect(() => {
-    getData();
-  }, []);
+  React.useEffect(() => {
+    !props.list.length && getData();
+    const interval = setInterval(() => {
+      dispatch({ type: "TICK" });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [!props.list.length]);
 
   return (
     <View style={{ flex: 1, padding: 24 }}>
       {isLoading ? (
         <ActivityIndicator size="large" />
       ) : (
-        <FlatList
-          data={props.list}
-          keyExtractor={({ id }, index) => id}
-          renderItem={({ item }) => (
-            <Text
-              style={styles.item}
-              onPress={() => props.navigation.navigate("Details", { item })}
-            >
-              {item.id} - {item.type}
-            </Text>
-          )}
-        />
+        <>
+          <Text>countdown: {props.countdown}</Text>
+          <FlatList
+            data={props.list}
+            keyExtractor={({ id }, index) => id}
+            renderItem={({ item }) => (
+              <Text
+                style={styles.item}
+                onPress={() => {
+                  props.navigation.navigate("Details", { item });
+                  dispatch({ type: "CLEAN_LIST" });
+                }}
+              >
+                {item.id} - {item.type}
+              </Text>
+            )}
+          />
+        </>
       )}
     </View>
   );
 };
 
 const mapStateToProps = (state) => {
-  const { list } = state;
-  return { list };
+  const { list, countdown } = state;
+  return { list, countdown };
 };
 
 export default connect(mapStateToProps)(HomeScreen);
