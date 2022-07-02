@@ -1,4 +1,4 @@
-import { ActivityIndicator, FlatList, Text, View, Button } from "react-native";
+import { ActivityIndicator, FlatList, Text, View, Button, ScrollView } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { connect, useDispatch } from "react-redux";
 import React, { useState } from "react";
@@ -7,6 +7,7 @@ import styles from "../src/styles";
 
 const HomeScreen = (props) => {
   const [isLoading, setLoading] = useState(true);
+  const [isPaused, setPaused] = useState(false);
   const dispatch = useDispatch();
 
   const getData = async () => {
@@ -27,14 +28,23 @@ const HomeScreen = (props) => {
     React.useCallback(() => {
       !props.list.length && getData();
       const interval = setInterval(() => {
-        dispatch({ type: "TICK" });
+        !isPaused && dispatch({ type: "TICK_AUTO_UPDATE" });
+      }, 1000);
+      return () => clearInterval(interval);
+    }, [!props.list.length, isPaused])
+  );
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const interval = setInterval(() => {
+        dispatch({ type: "TICK_BUTTON_UPDATE" });
       }, 1000);
       return () => clearInterval(interval);
     }, [!props.list.length])
   );
 
   return (
-    <View style={{ flex: 1, padding: 24 }}>
+    <View style={{ flex: 1, padding: 24 }} onScroll={() => console.log("scroll")}>
       {isLoading ? (
         <ActivityIndicator size="large" />
       ) : (
@@ -65,6 +75,8 @@ const HomeScreen = (props) => {
                 </Text>
               </View>
             )}
+            onScrollBeginDrag={() => setPaused(true)}
+            onScrollEndDrag={() => setPaused(false)}
           />
         </>
       )}
