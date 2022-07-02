@@ -39,9 +39,9 @@ const HomeScreen = (props) => {
         <ActivityIndicator size="large" />
       ) : (
         <>
-          <Text>auto update: {props.countdown}</Text>
+          <Text style={styles.countdownText}>auto update: {props.countdown}</Text>
           <View style={styles.container}>
-            <Text>activate button after: {props.updateListAfter}</Text>
+            <Text style={styles.countdownText}>activate button after: {props.updateListAfter}</Text>
             <Button
               title="Update list"
               onPress={() => dispatch({ type: "CLEAN_LIST" })}
@@ -49,18 +49,21 @@ const HomeScreen = (props) => {
             />
           </View>
           <FlatList
+            style={styles.flatList}
             data={props.list}
             keyExtractor={({ id }, index) => id}
             renderItem={({ item }) => (
-              <Text
-                style={styles.item}
-                onPress={() => {
-                  props.navigation.navigate("Details", { item });
-                  dispatch({ type: "CLEAN_LIST" });
-                }}
-              >
-                {item.id} - {item.type}
-              </Text>
+              <View style={styles.activeElement}>
+                <Text
+                  style={styles.elementText}
+                  onPress={() => {
+                    props.navigation.navigate("Details", { item });
+                    dispatch({ type: "CLEAN_LIST" });
+                  }}
+                >
+                  {item.id} - {item.type}
+                </Text>
+              </View>
             )}
           />
         </>
