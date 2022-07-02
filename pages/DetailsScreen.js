@@ -12,8 +12,8 @@ const DetailsScreen = ({ route }) => {
       <Text style={styles.item}>public: {item.public.toString()}</Text>
       <Text style={styles.item}>created_at: {item.created_at}</Text>
       <Text style={styles.item}>login: {item.actor.login}</Text>
-      <Text style={styles.item}>url: </Text>
-      <Text style={styles.item}>url: {item.actor.url}</Text>
+      <Text style={styles.title}>url: </Text>
+      <Text style={styles.item}>{item.actor.url}</Text>
     </>
   );
 };

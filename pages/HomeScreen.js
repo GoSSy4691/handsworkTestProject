@@ -1,6 +1,7 @@
-import { ActivityIndicator, FlatList, Text, View } from "react-native";
-import React, { useState } from "react";
+import { ActivityIndicator, FlatList, Text, View, Button } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 import { connect, useDispatch } from "react-redux";
+import React, { useState } from "react";
 
 import styles from "../src/styles";
 
@@ -22,13 +23,15 @@ const HomeScreen = (props) => {
     }
   };
 
-  React.useEffect(() => {
-    !props.list.length && getData();
-    const interval = setInterval(() => {
-      dispatch({ type: "TICK" });
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [!props.list.length]);
+  useFocusEffect(
+    React.useCallback(() => {
+      !props.list.length && getData();
+      const interval = setInterval(() => {
+        dispatch({ type: "TICK" });
+      }, 1000);
+      return () => clearInterval(interval);
+    }, [!props.list.length])
+  );
 
   return (
     <View style={{ flex: 1, padding: 24 }}>
@@ -36,7 +39,15 @@ const HomeScreen = (props) => {
         <ActivityIndicator size="large" />
       ) : (
         <>
-          <Text>countdown: {props.countdown}</Text>
+          <Text>auto update: {props.countdown}</Text>
+          <View style={styles.container}>
+            <Text>activate button after: {props.updateListAfter}</Text>
+            <Button
+              title="Update list"
+              onPress={() => dispatch({ type: "CLEAN_LIST" })}
+              disabled={!!props.updateListAfter}
+            />
+          </View>
           <FlatList
             data={props.list}
             keyExtractor={({ id }, index) => id}
@@ -59,8 +70,8 @@ const HomeScreen = (props) => {
 };
 
 const mapStateToProps = (state) => {
-  const { list, countdown } = state;
-  return { list, countdown };
+  const { list, countdown, updateListAfter } = state;
+  return { list, countdown, updateListAfter };
 };
 
 export default connect(mapStateToProps)(HomeScreen);
